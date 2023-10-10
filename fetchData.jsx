@@ -3,8 +3,8 @@ const Pagination = ({ items, pageSize, onPageChange }) => {
   if (items.length <= 1) return null;
 
   let num = Math.ceil(items.length / pageSize);
-  let pages = range(1, num + 1);
-  const list = pages.map((page) => {
+  let pages = range(1, num);
+  const list = pages.map(page => {
     return (
       <Button key={page} onClick={onPageChange} className="page-item">
         {page}
@@ -84,23 +84,23 @@ const dataFetchReducer = (state, action) => {
       throw new Error();
   }
 };
-// App that gets data from Hacker News url
+// App that gets data from Meowfacts
 function App() {
   const { Fragment, useState, useEffect, useReducer } = React;
-  const [query, setQuery] = useState("MIT");
+  const [query, setQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const [{ data, isLoading, isError }, doFetch] = useDataApi(
-    "https://hn.algolia.com/api/v1/search?query=MIT",
+    "https://meowfacts.herokuapp.com/?count=50",
     {
-      hits: [],
+      data: []
     }
   );
   const handlePageChange = (e) => {
     setCurrentPage(Number(e.target.textContent));
   };
-  let page = data.hits;
-  if (page.length >= 1) {
+  let page = data.data;
+  if (page && page.length >= 1) {
     page = paginate(page, currentPage, pageSize);
     console.log(`currentPage: ${currentPage}`);
   }
@@ -111,14 +111,15 @@ function App() {
       ) : (
         <ul className="list-group">
           {page.map((item) => (
-            <li key={item.objectID} className="list-group-item">
-              <a href={item.url}>{item.title}</a>
+            <li key={item + 1} className="list-group-item">
+              {item}
+              {/* {console.log(item + 1)} */}
             </li>
           ))}
         </ul>
       )}
       <Pagination
-        items={data.hits}
+        items={data.data}
         pageSize={pageSize}
         onPageChange={handlePageChange}
       ></Pagination>
